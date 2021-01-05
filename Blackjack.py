@@ -56,10 +56,6 @@ cards_list = [
   ['Spades', 'Ace'],
   ]
 cards = cards_list
-break_loop = 'False'
-
-print('Welcome to Blackjack!')
-print('The dealer deals the cards.\n')
 
 def card_random(cards):
   random_card = random.choice(cards)
@@ -92,72 +88,91 @@ def print_hand(hand):
   for card in hand:
     print(f'{card[1]} of {card[0]}')
 
-def test(dealer_total, player_total):
-  if dealer_total > 21:
-    print('Dealer goes bust! You win!')
-    break_loop = 'True'
-    return break_loop
-  elif dealer_total == 21:
-    print('Dealer has Blackjack! You lose.')
-    break_loop = 'True'
-    return break_loop
-  elif player_total == 21:
-    print('You have BlackJack! You win!')
-    break_loop = 'True'
-    return break_loop
-  elif player_total > 21:
-    print("You've gone bust! You lose.")
-    break_loop = 'True'
-    return break_loop
+def compare(dealer_total, player_total):
+    if player_total > dealer_total:
+        return 'You win!'
+    elif dealer_total > player_total:
+        return 'You lose.'
+    else:
+        return "It's a draw."
 
-def hit():
-    cont = 'y'
-    while cont == 'y':
-      hit_stay = input("Would you like to stay or hit? (enter 's' or 'h'): ").lower()
-      if hit_stay == 's':
-        if dealer_total < player_total:
-          print('You win!')
-          cont = 'n'
-          break_loop = 'True'
-          return break_loop
+def hit(player_hand):
+    cont = 'True'
+    while cont == 'True':
+        hit_stay = input("Would you like to stay or hit? (enter 's' or 'h'): ").lower()
+        if hit_stay == 's':
+            cont = 'False'
+            return player_hand
+        elif hit_stay == 'h':
+            print('You are dealt another card...')
+            player_hand.append(random.choice(cards))
+            print_hand(player_hand)
+            player_total = hand_value(player_hand)
+            print("Your hand's total is:", player_total)
+            print()
+            if player_total >= 21:
+                cont = 'False'
+                return player_hand
         else:
-          print('You lose.')
-          cont = 'n'
-          break_loop = 'True'
-          return break_loop
-      elif hit_stay == 'h':
-        player_hand.append(random.choice(cards))
-        print('You are dealt another card...')
-        print_hand(player_hand)
+            print("Please enter 's' or 'h'.")
+
+def clear_screen():
+    if os.name == 'posix':
+        _ = os.system('clear')
+    else:
+        _ = os.system('cls')
+
+game = (input("Do you want to play a hand of Blackjack? ('y' or 'n') ")).lower()
+if game == 'y':
+    game_play = 'True'
+else:
+    game_play = 'False'
+
+while game_play:
+    break_dealer = 'True'
+    game_play = 'False'
+
+    print(logo)
+    print('Welcome to Blackjack!')
+    print('******************************')
+    print('The dealer deals the cards.\n')
+    sleep(1)
+
+    player_hand = []
+    player_hand.append(card_random(cards))
+    player_hand.append(card_random(cards))
+    player_total = hand_value(player_hand)
+
+    dealer_hand = []
+    dealer_hand.append(card_random(cards))
+
+    print(f"Dealer's hand:")
+    print_hand(dealer_hand)
+    print('Hidden')
+    dealer_hand.append(card_random(cards))
+    dealer_total = hand_value(dealer_hand)
+    print('------------------')
+    print("Your hand:")
+    print_hand(player_hand)
+    print("Your hand's total is:", player_total)
+    print()
+
+    if player_total < 21:
+        player_hand = hit(player_hand)
         player_total = hand_value(player_hand)
-        print("Your hand's total is:", player_total)
+    if player_total == 21:
+        print('You have Blackjack!')
         print()
-        cont = 'n'
-      else:
-         print("Please enter 's' or 'h'.")
-
-player_hand = []
-player_hand.append(card_random(cards))
-player_hand.append(card_random(cards))
-player_total = hand_value(player_hand)
-
-dealer_hand = []
-dealer_hand.append(card_random(cards))
-dealer_hand.append(card_random(cards))
-dealer_total = hand_value(dealer_hand)
-
-print(f"Dealer's hand:")
-print_hand(dealer_hand)
-print("Dealer's total is:", dealer_total)
-print('------------------')
-print("Your hand:")
-print_hand(player_hand)
-print("Your hand's total is:", player_total)
-print()
-
-while hand_value(dealer_hand) < 21:
-    while hand_value(dealer_hand) < 16:
-        input('Press enter to continue...')
+    elif player_total > 21:
+        print('You have gone bust! You lose.')
+        print()
+        break_dealer = 'False'
+    print('The dealer shows his cards:')
+    print_hand(dealer_hand)
+    print("Dealer's total is:", dealer_total)
+    print()
+    while break_dealer == 'True' and dealer_total < 17:
+        input('Press enter to have the dealer deal himself another card...')
         print()
         dealer_hand.append(random.choice(cards))
         print('Dealer takes a hit. His new hand is: ')
@@ -165,27 +180,19 @@ while hand_value(dealer_hand) < 21:
         dealer_total = hand_value(dealer_hand)
         print("Dealer's total is:", dealer_total)
         print('------------------')
-        test(dealer_total, player_total)
-        if break_loop == 'True':
-            break
-        else:
-            hit()
-            test(dealer_total, player_total)
-            if break_loop == 'True':
-                break
-    test(dealer_total, player_total)
-    if break_loop == 'True':
-        print('You went bust! You lose.')
-        exit()
-    if hand_value(player_hand) > hand_value(dealer_hand):
-        if hand_value(player_hand) > 21:
-            print('You went bust! You lose.')
-        elif hand_value(player_hand) == 21:
-            print('Blackjack! You win!')
-        else:
-            print('You win!')
-        exit()
-    else:
-        hit()
-if hand_value(dealer_hand) > 21:
-    print('Dealer goes bust. You win!')
+    if dealer_total == 21:
+        print('Dealer has Blackjack!')
+        print()
+        break_dealer = 'False'
+    elif dealer_total > 21:
+        print('Dealer has gone bust! You win!')
+        break_dealer = 'False'
+    if dealer_total < 22 and player_total < 22:
+        print(compare(dealer_total, player_total))
+        print()
+    sleep(1)
+    print('------------------')
+    game = input("Shall we play again? ('y' or 'n') ")
+    if game == 'y':
+        game_play == 'True'
+    clear_screen()
