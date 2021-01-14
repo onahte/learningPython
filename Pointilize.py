@@ -1,3 +1,5 @@
+#This program pointilizes an image in 10 pixel increments.
+
 from PIL import Image, ImageDraw
 import colorgram
 
