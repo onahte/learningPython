@@ -34,11 +34,9 @@ def get_color(img):
 def transform(img):
     img, width, height = trim(img)
     new_img = Image.new('RGB', (width, height))
-    final_img = []
     x = 0
     for i in range(int(width/10)):
         y = 0
-        square_list = []
         column = img.crop((x, 0, x + 10, img.size[1]))
         for j in range(int(height/10)):
             square = column.crop((0, y, 10, y + 10))
