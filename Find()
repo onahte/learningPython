@@ -1,0 +1,16 @@
+#Writing my own find() method
+
+def find(str1, str2):
+    x = 0
+    y = 0
+    ptr = 0
+    while x < len(str1):
+        if str2[y] == str1[x]:
+            y += 1
+            ptr = x
+            if len(str2) == y:
+                return x+1-len(str2)
+        x += 1
+        if x != ptr + 1:
+            y= 0
+    return 0
