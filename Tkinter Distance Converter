@@ -1,0 +1,36 @@
+#First foray into Tkinter. This program converts miles into km.
+
+import tkinter as tk
+
+window = tk.Tk()
+window.minsize(width=300, height=100)
+window.title('Distance Converter')
+window.config(padx=15, pady=15, bg='white')
+
+win_label = tk.Label(text='Welcome to Distance Converter', fg='black', bg='white', font=('arial',15,'bold'))
+win_label.place(x=18, y=10)
+
+mile_entry = tk.Entry(width=5, bg='white')
+mile_entry.insert(0, '0')
+mile_entry.place(x=30, y=45)
+mile_entry.config(fg='black')
+data = str(mile_entry.get())
+
+def convertDist():
+    m = float(mile_entry.get())
+    m *= 1.609
+    km_return.config(text=str(round(m,2)))
+    return m
+
+miles = tk.Label(window,text='Miles', bg='white', fg='black')
+miles.place(x=90, y=49)
+km = tk.Label(window,text='Km', bg='white', fg='black')
+km.place(x=90, y=80)
+km_return = tk.Label(window,text=data, bg='white', fg='black')
+km_return.place(x=32, y=80)
+
+convert = tk.Button(text='Convert', bg='white', fg='black', command=convertDist)
+convert.place(x=150, y=44)
+
+
+window.mainloop()
