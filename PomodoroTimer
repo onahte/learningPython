@@ -1,0 +1,126 @@
+#This is a Pomodoro Timer app. The premise for Pomodoro is that it is a system to help you optimize your productivity by alternating blocks of work and break times.
+
+import tkinter as tk
+
+#Variables
+PINK = "#e2979c"
+RED = "#e7305b"
+GREEN = "#9bdeac"
+YELLOW = "#f7f5dd"
+FONT_NAME = "Courier"
+WORK_MIN = 25
+SHORT_BREAK_MIN = 5
+LONG_BREAK_MIN = 20
+reps = 0
+timer = None
+
+'''Click 'start' button to begin timer. When it's time to work, the app will tell you 'work' and set timer for 25min. Break times are signified by 'break' and alots
+    5 mins until your fourth break, which is 20 min.'''
+
+def startTimer():
+    global reps
+    reps += 1
+    work_sec = WORK_MIN * 60
+    short_break_sec = SHORT_BREAK_MIN * 60
+    long_break_sec = LONG_BREAK_MIN * 60
+
+    if reps == 8:
+        countDown(long_break_sec)
+        timer_txt.config(text='Break', fg=RED)
+    elif reps % 2 > 0:
+        countDown(work_sec)
+        timer_txt.config(text='Work', fg=GREEN)
+        timer_txt.place(x=87, y=15)
+    else:
+        countDown(short_break_sec)
+        timer_txt.config(text='Break', fg=PINK)
+
+    if reps > 0 and reps % 2 == 0:
+        mark = ''
+        for i in range(reps//2):
+            mark = mark + '✓'
+        check.config(text=mark)
+        check.grid(2,3)
+
+#This resets the Pomodoro app upon clicking 'reset'.
+def resetTimer():
+    global reps
+    global timer
+    reps = 0
+    root.after_cancel(timer)
+    check.config(text='')
+    timer_txt.config(text='Timer', fg=GREEN)
+    canvas.itemconfig(timer_text, text='00:00')
+
+#Helper method to display the timer.
+def countDown(count):
+    global timer
+    count_min = count // 60
+    if count_min < 10:
+        count_min = f'0{count_min}'
+    count_sec = count % 60
+    if count_sec < 10:
+        count_sec = f'0{count_sec}'
+    canvas.itemconfig(timer_text, text=f'{count_min}:{count_sec}')
+    if count > 0:
+        timer = root.after(1000, countDown, count-1)
+    else:
+        startTimer()
+
+
+root = tk.Tk()
+root.title('Pomodoro')
+root.minsize(width=300, height=345)
+root.config(bg=YELLOW)
+
+canvas = tk.Canvas(
+                    width=210,
+                    height=226,
+                    bg=YELLOW,
+                    highlightthickness=0
+                    )
+tomato = tk.PhotoImage(file='tomato.png')
+canvas.create_image(104, 113, image=tomato)
+timer_text = canvas.create_text(
+                                107,135,
+                                text='00:00',
+                                font=(FONT_NAME, 36, 'bold')
+                                )
+canvas.place(x=40, y=65)
+
+
+timer_txt = tk.Label(
+                    text='Timer',
+                    fg=GREEN,
+                    bg=YELLOW,
+                    font=(FONT_NAME, 50)
+                    )
+timer_txt.place(x=72,y=15)
+
+#Start Button
+start = tk.Button(
+                root,
+                text='Start',
+                fg=RED,
+                bg=YELLOW,
+                highlightbackground=YELLOW,
+                command=startTimer
+    )
+start.place(x=25, y=280)
+
+#Reset Button
+reset = tk.Button(
+                text='Reset',
+                fg=RED,
+                bg=YELLOW,
+                highlightbackground=YELLOW,
+                command=resetTimer
+                )
+reset.place(x=205, y=280)
+
+#Check marks to let you know how many sessions were completed.
+check = tk.Label(fg='GREEN', bg=YELLOW)
+check.place(x=138, y=300)
+
+
+root.mainloop()
