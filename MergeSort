@@ -1,0 +1,29 @@
+#Merge sort for sorting large lists. This works by splitting the list into its smallest components (by halves) and merging them as it sorts those components.
+
+
+#Method to sort and merge lists.
+def sort(left, right):
+    final = []
+    indexL, indexR = 0,0
+#Compare the values from each component list and add the lesser value to the merge list.
+    while indexL < len(left) and indexR < len(right):
+        if left[indexL] >= right[indexR]:
+            final.append(right[indexR])
+            indexR += 1
+        else:
+            final.append(left[indexL])
+            indexL += 1
+#In the case one list has remaining elements, this will add them to the merge list. No element left behind.
+    if indexL == len(left): final.extend(right[indexR:])
+    else:                   final.extend(left[indexL:])
+
+    return final
+
+
+#Method to split list recursively.
+def mergeSort(inputList):
+    if len(inputList) <= 1:
+        return inputList
+    left, right = mergeSort(inputList[:len(inputList)//2]), mergeSort(inputList[len(inputList)//2:])
+
+    return sort(left, right)
